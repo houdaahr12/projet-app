@@ -1,5 +1,15 @@
 import 'package:flutter/material.dart';
 
+import 'brand.dart';
+import 'home_page.dart';
+import 'screens/alerts_page.dart';
+import 'screens/alert_details_page.dart';
+import 'screens/patients_page.dart';
+import 'screens/patient_details_page.dart';
+import 'screens/doctor_profile_page.dart';
+import 'models/demo_data.dart';
+import 'theme/colors.dart';
+
 import 'pages/gestion_medecins.dart';
 import 'pages/home_medecin.dart';
 import 'pages/login_admin.dart';
@@ -69,8 +79,15 @@ class SepsisCareApp extends StatelessWidget {
           ),
         ),
       ),
-      home: const LoginAdmin(),
-    );
+routes: {
+        '/home': (_) => const HomePage(), // was '/' in assia's version
+        '/alerts': (_) => const AlertsPage(),
+        '/patients': (_) => const PatientsPage(),
+        '/profile': (_) => const DoctorProfilePage(),
+      },
+      onGenerateRoute: (settings) {
+        // copy assia's whole onGenerateRoute block here, exactly as in her file
+      },    );
   }
 }
 
