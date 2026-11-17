@@ -2,9 +2,40 @@ import 'package:flutter/material.dart';
 import '../brand.dart';
 import '../theme/colors.dart';
 import '../widgets/sepsis_bottom_nav.dart';
+import '../services/auth_service.dart';
 
-class DoctorProfilePage extends StatelessWidget {
+class DoctorProfilePage extends StatefulWidget {
   const DoctorProfilePage({super.key});
+
+  @override
+  State<DoctorProfilePage> createState() => _DoctorProfilePageState();
+}
+
+class _DoctorProfilePageState extends State<DoctorProfilePage> {
+  String _nom = '';
+  String? _sexe;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    final nom = await AuthService.getUserName();
+    final sexe = await AuthService.getUserSexe();
+    if (!mounted) return;
+    setState(() {
+      _nom = nom ?? '';
+      _sexe = sexe;
+    });
+  }
+
+  Future<void> _logout() async {
+    await AuthService.logout();
+    if (!mounted) return;
+    Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+  }
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -17,25 +48,22 @@ class DoctorProfilePage extends StatelessWidget {
           const CircleAvatar(radius: 37, backgroundColor: Color(0xFFE5F3F1),
             child: Icon(Icons.person_rounded, color: SepsisColors.teal, size: 39)),
           const SizedBox(height: 12),
-          const Text(demoDoctorName, style: TextStyle(color: SepsisColors.navy, fontSize: 19, fontWeight: FontWeight.w900)),
+          Text(_nom.isEmpty ? demoDoctorName : _nom,
+            style: const TextStyle(color: SepsisColors.navy, fontSize: 19, fontWeight: FontWeight.w900)),
           const SizedBox(height: 4),
           const Text(demoDoctorRole, style: TextStyle(color: SepsisColors.muted, fontSize: 12)),
-          const SizedBox(height: 14),
-          Container(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-            decoration: BoxDecoration(color: SepsisColors.lowSoft, borderRadius: BorderRadius.circular(20)),
-            child: const Text('Compte de démonstration', style: TextStyle(color: SepsisColors.low, fontSize: 10, fontWeight: FontWeight.w800))),
         ]),
       ),
       const SizedBox(height: 17),
       _item(Icons.local_hospital_outlined, 'Service', 'Réanimation'),
       _item(Icons.badge_outlined, 'Fonction', 'Médecin réanimateur'),
-      _item(Icons.shield_outlined, 'Confidentialité', 'Données de démonstration'),
+      _item(Icons.wc_rounded, 'Sexe', _sexe == 'F' ? 'Femme' : _sexe == 'M' ? 'Homme' : '—'),
       _item(Icons.info_outline_rounded, 'À propos de SepsisCare', appSlogan),
       const SizedBox(height: 18),
       OutlinedButton.icon(
-        onPressed: () => Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false),
+        onPressed: _logout,
         icon: const Icon(Icons.logout_rounded),
-        label: const Text('Retour à l’accueil'),
+        label: const Text('Se déconnecter'),
         style: OutlinedButton.styleFrom(foregroundColor: SepsisColors.navy, minimumSize: const Size.fromHeight(47)),
       ),
     ]),

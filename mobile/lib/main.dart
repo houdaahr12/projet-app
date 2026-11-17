@@ -79,14 +79,30 @@ class SepsisCareApp extends StatelessWidget {
           ),
         ),
       ),
+        home: const AppEntry(), 
+
 routes: {
-        '/home': (_) => const HomePage(), // was '/' in assia's version
+        '/home': (_) => const HomePage(), 
         '/alerts': (_) => const AlertsPage(),
         '/patients': (_) => const PatientsPage(),
         '/profile': (_) => const DoctorProfilePage(),
       },
       onGenerateRoute: (settings) {
-        // copy assia's whole onGenerateRoute block here, exactly as in her file
+        switch (settings.name) {
+          case '/alert-details':
+            final patient = settings.arguments as DemoPatient;
+            return MaterialPageRoute(
+              builder: (_) => AlertDetailsPage(patient: patient),
+              settings: settings,
+            );
+          case '/patient-details':
+            final patient = settings.arguments as DemoPatient;
+            return MaterialPageRoute(
+              builder: (_) => PatientDetailsPage(patient: patient),
+              settings: settings,
+            );
+        }
+        return null;
       },    );
   }
 }
@@ -160,7 +176,7 @@ class _AppEntryState extends State<AppEntry> {
 
     if (role == 'admin') return const GestionMedecins();
 
-    if (role == 'medecin') return HomeMedecin(nom: nom, sexe: sexe);
+    if (role == 'medecin') return HomePage();
 
     return const LoginAdmin();
   }

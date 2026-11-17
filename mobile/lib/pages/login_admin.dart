@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:mobile/home_page.dart';
 
 import '../services/auth_service.dart';
 import '../widgets/login_background.dart';
@@ -96,10 +97,7 @@ class _LoginAdminState extends State<LoginAdmin>
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (_) => HomeMedecin(
-              nom: user['nom']?.toString() ?? '',
-              sexe: user['sexe']?.toString(),
-            ),
+            builder: (_) => HomePage(),
           ),
         );
       } else {
