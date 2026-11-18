@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
-
-import 'login_page.dart';
+import 'main.dart'; // gives access to AppEntry
+import 'pages/gestion_medecins.dart';
+import 'pages/home_medecin.dart'; // only if HomePage is not enough, see note
 import 'home_page.dart';
 import 'services/biometric_service.dart';
-import 'services/token_storage.dart';
+import 'services/auth_service.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
+
+  static bool alreadyShown = false;
+
 
   @override
   State<SplashPage> createState() => _SplashPageState();
@@ -90,25 +94,39 @@ class _SplashPageState extends State<SplashPage>
     _controller.forward().whenComplete(_goNext);
   }
 
-    Future<void> _goNext() async {
+         Future<void> _goNext() async {
     if (!mounted) return;
+    SplashPage.alreadyShown = true;
 
-    final bio = BiometricService();
-    if (await bio.isEnabled() && await bio.authenticate()) {
-      final session = await bio.readSession();
-      if (session != null) {
-        // So the rest of your app (ApiService) uses this token as usual
-        await TokenStorage.save(session['token']!);
-        if (!mounted) return;
-        _fadeTo(HomePage(userName: session['name']!));
-        return;
+    try {
+      final bio = BiometricService();
+      if (await bio.isEnabled()) {
+        if (await bio.authenticate()) {
+          final creds = await bio.readCredentials();
+          if (creds != null) {
+            try {
+              // Silent login: fresh token, role and name are saved again
+              await AuthService.login(
+                creds['identifiant']!,
+                creds['mot_de_passe']!,
+              );
+            } catch (_) {
+              // Password changed, account disabled, server unreachable...
+              await AuthService.logout();
+            }
+          }
+        } else {
+          // Cancelled or failed: never reuse the saved session
+          await AuthService.logout();
+        }
       }
+    } catch (_) {
+      // Fingerprint unavailable (Chrome...): continue normally
     }
 
     if (!mounted) return;
-    _fadeTo(const LoginPage());
+    _fadeTo(const AppEntry());
   }
-
   void _fadeTo(Widget page) {
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(

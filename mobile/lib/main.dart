@@ -80,8 +80,9 @@ class SepsisCareApp extends StatelessWidget {
           ),
         ),
       ),
-      home: const SplashPage(),
+      home: const StartupGate(),
       routes: {
+        '/splash': (_) => const SplashPage(),
         '/home': (_) => const HomePage(userName: '',),
         '/alerts': (_) => const AlertsPage(),
         '/patients': (_) => const PatientsPage(),
@@ -176,8 +177,16 @@ class _AppEntryState extends State<AppEntry> {
 
     if (role == 'admin') return const GestionMedecins();
 
-    if (role == 'medecin') return HomePage(userName: '',);
-
+    if (role == 'medecin') return HomePage(userName: nom);
     return const LoginAdmin();
+  }
+}
+/// Shows the splash only the first time, then always goes to AppEntry.
+class StartupGate extends StatelessWidget {
+  const StartupGate({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return SplashPage.alreadyShown ? const AppEntry() : const SplashPage();
   }
 }

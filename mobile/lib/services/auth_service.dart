@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'biometric_service.dart';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
@@ -46,11 +47,12 @@ class AuthService {
     }
   }
 
-  static Future<void> logout() async {
+   static Future<void> logout({bool forgetBiometric = false}) async {
     await storage.delete(key: 'access_token');
     await storage.delete(key: 'user_name');
     await storage.delete(key: 'user_role');
     await storage.delete(key: 'user_sexe');
+    if (forgetBiometric) await BiometricService().disable();
   }
 
   static Future<String?> getToken() async {
@@ -70,4 +72,5 @@ class AuthService {
   static Future<String?> getUserSexe() async {
     return storage.read(key: 'user_sexe');
   }
+  
 }

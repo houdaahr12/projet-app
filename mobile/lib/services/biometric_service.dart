@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:local_auth/local_auth.dart';
 
@@ -5,38 +6,55 @@ class BiometricService {
   final _auth = LocalAuthentication();
   final _storage = const FlutterSecureStorage();
 
-  Future<bool> isAvailable() async {
-    final canCheck = await _auth.canCheckBiometrics;
-    final supported = await _auth.isDeviceSupported();
-    return canCheck && supported;
-  }
+  static const _kEnabled = 'bio_enabled';
+  static const _kIdentifiant = 'bio_identifiant';
+  static const _kPassword = 'bio_password';
 
-  Future<bool> authenticate() async {
+  Future<bool> isAvailable() async {
     try {
-      return await _auth.authenticate(
-        localizedReason: 'Scan your fingerprint to log in',
-        biometricOnly: true,
-      );
+      final canCheck = await _auth.canCheckBiometrics;
+      final supported = await _auth.isDeviceSupported();
+      return canCheck && supported;
     } catch (_) {
       return false;
     }
   }
 
+  Future<bool> authenticate() async {
+    try {
+      return await _auth.authenticate(
+        localizedReason: 'Scannez votre empreinte pour vous connecter',
+        biometricOnly: true,
+      );
+    } catch (e) {
+      debugPrint('BIOMETRIC ERROR: $e');
+      return false;
+    }
+  }
+
   Future<bool> isEnabled() async =>
-      (await _storage.read(key: 'bio_enabled')) == 'true';
+      (await _storage.read(key: _kEnabled)) == 'true';
 
-  Future<void> enable({required String token, required String name}) async {
-    await _storage.write(key: 'bio_enabled', value: 'true');
-    await _storage.write(key: 'token', value: token);
-    await _storage.write(key: 'name', value: name);
+  Future<void> enable({
+    required String identifiant,
+    required String motDePasse,
+  }) async {
+    await _storage.write(key: _kIdentifiant, value: identifiant);
+    await _storage.write(key: _kPassword, value: motDePasse);
+    await _storage.write(key: _kEnabled, value: 'true');
   }
 
-  Future<Map<String, String>?> readSession() async {
-    final token = await _storage.read(key: 'token');
-    final name = await _storage.read(key: 'name');
-    if (token == null || name == null) return null;
-    return {'token': token, 'name': name};
+  Future<Map<String, String>?> readCredentials() async {
+    final id = await _storage.read(key: _kIdentifiant);
+    final pw = await _storage.read(key: _kPassword);
+    if (id == null || pw == null) return null;
+    return {'identifiant': id, 'mot_de_passe': pw};
   }
 
-  Future<void> disable() async => _storage.deleteAll();
+  /// Only removes the fingerprint data, never the rest of the session.
+  Future<void> disable() async {
+    await _storage.delete(key: _kEnabled);
+    await _storage.delete(key: _kIdentifiant);
+    await _storage.delete(key: _kPassword);
+  }
 }

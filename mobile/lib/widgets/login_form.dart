@@ -14,6 +14,8 @@ class LoginForm extends StatelessWidget {
   final VoidCallback onToggleObscure;
   final VoidCallback onSubmit;
 
+    final VoidCallback? onBiometricLogin;
+
   const LoginForm({
     super.key,
     required this.formKey,
@@ -24,6 +26,7 @@ class LoginForm extends StatelessWidget {
     required this.erreur,
     required this.onToggleObscure,
     required this.onSubmit,
+    this.onBiometricLogin,
   });
 
   static const _erreurClaire = Color(0xFFFFB4B4);
@@ -223,8 +226,28 @@ class LoginForm extends StatelessWidget {
                               ],
                             ),
                     ),
-                  ),
+                                 ),
+
+                  if (onBiometricLogin != null) ...[
+                    const SizedBox(height: 14),
+                    TextButton.icon(
+                      onPressed: loading ? null : onBiometricLogin,
+                      icon: const Icon(
+                        Icons.fingerprint,
+                        color: Colors.white,
+                        size: 28,
+                      ),
+                      label: const Text(
+                        "Utiliser l'empreinte",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ],
+                  
+
+                  // 👆 END FINGERPRINT BUTTON
                   const SizedBox(height: 20),
+
                   Text(
                     "Compte créé par l'administrateur de votre service",
                     textAlign: TextAlign.center,
