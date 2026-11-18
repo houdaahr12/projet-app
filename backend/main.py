@@ -1,17 +1,32 @@
-import os
-from dotenv import load_dotenv
 from fastapi import FastAPI
-from sqlalchemy import create_engine, text
+from fastapi.middleware.cors import CORSMiddleware
 
-load_dotenv()
-engine = create_engine(os.getenv("DATABASE_URL"))
-app = FastAPI()
+from routers import auth, doctors, stats
+from database import engine, Base      
+import models                          
+
+Base.metadata.create_all(bind=engine)
+app = FastAPI(
+    title="SepsisCare API",
+    description="Administration des médecins réanimateurs",
+    version="1.0",
+)
+
+# CORS : autoriser Flutter Web pendant le développement
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Branchement des routeurs
+app.include_router(auth.router)
+app.include_router(doctors.router)
+app.include_router(stats.router)
+
 
 @app.get("/")
-def root():
-    return {"message": "API is running: hey houdaa"}
-
-@app.get("/db-test")
-def db_test():
-    with engine.connect() as conn:
-        return {"db": conn.execute(text("SELECT version()")).scalar()}
+def home():
+    return {"message": "SepsisCare API fonctionne correctement"}

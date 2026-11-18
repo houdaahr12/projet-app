@@ -1,0 +1,9 @@
+# Secrets : chacune a ses propres identifiants
+.env
+backend/.env
+
+# Python
+venv/
+.venv/
+__pycache__/
+*.pyc
