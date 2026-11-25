@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'main.dart'; // gives access to AppEntry
-import 'pages/gestion_medecins.dart';
-import 'pages/home_medecin.dart'; // only if HomePage is not enough, see note
-import 'home_page.dart';
 import 'services/biometric_service.dart';
 import 'services/auth_service.dart';
 

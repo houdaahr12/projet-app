@@ -6,7 +6,6 @@ import '../services/auth_service.dart';
 import '../widgets/login_background.dart';
 import '../widgets/login_form.dart';
 import 'gestion_medecins.dart';
-import 'home_medecin.dart';
 
 class LoginAdmin extends StatefulWidget {
   const LoginAdmin({super.key});

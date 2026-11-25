@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+
 import '../brand.dart';
+import '../services/auth_service.dart';
 import '../theme/colors.dart';
 import '../widgets/sepsis_bottom_nav.dart';
-import '../services/auth_service.dart';
 
 class DoctorProfilePage extends StatefulWidget {
   const DoctorProfilePage({super.key});
@@ -14,6 +15,8 @@ class DoctorProfilePage extends StatefulWidget {
 class _DoctorProfilePageState extends State<DoctorProfilePage> {
   String _nom = '';
   String? _sexe;
+  String? _identifiant;
+  String? _role;
 
   @override
   void initState() {
@@ -22,12 +25,18 @@ class _DoctorProfilePageState extends State<DoctorProfilePage> {
   }
 
   Future<void> _load() async {
-    final nom = await AuthService.getUserName();
-    final sexe = await AuthService.getUserSexe();
+    final values = await Future.wait([
+      AuthService.getUserName(),
+      AuthService.getUserSexe(),
+      AuthService.getIdentifiant(),
+      AuthService.getRole(),
+    ]);
     if (!mounted) return;
     setState(() {
-      _nom = nom ?? '';
-      _sexe = sexe;
+      _nom = values[0] ?? '';
+      _sexe = values[1];
+      _identifiant = values[2];
+      _role = values[3];
     });
   }
 
@@ -42,21 +51,27 @@ class _DoctorProfilePageState extends State<DoctorProfilePage> {
     bottomNavigationBar: const SepsisCareBottomNav(currentIndex: 3),
     appBar: AppBar(title: const Text('Mon profil', style: TextStyle(fontWeight: FontWeight.w800))),
     body: ListView(padding: const EdgeInsets.all(20), children: [
-      Container(padding: const EdgeInsets.all(20), decoration: BoxDecoration(
-        color: Colors.white, borderRadius: BorderRadius.circular(18), border: Border.all(color: SepsisColors.border)),
+      Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: SepsisColors.border),
+        ),
         child: Column(children: [
           const CircleAvatar(radius: 37, backgroundColor: Color(0xFFE5F3F1),
             child: Icon(Icons.person_rounded, color: SepsisColors.teal, size: 39)),
           const SizedBox(height: 12),
-          Text(_nom.isEmpty ? demoDoctorName : _nom,
+          Text(_nom.isEmpty ? 'Nom non disponible' : _nom,
+            textAlign: TextAlign.center,
             style: const TextStyle(color: SepsisColors.navy, fontSize: 19, fontWeight: FontWeight.w900)),
           const SizedBox(height: 4),
-          const Text(demoDoctorRole, style: TextStyle(color: SepsisColors.muted, fontSize: 12)),
+          Text(_role == 'admin' ? 'Administrateur' : 'Médecin',
+            style: const TextStyle(color: SepsisColors.muted, fontSize: 12)),
         ]),
       ),
       const SizedBox(height: 17),
-      _item(Icons.local_hospital_outlined, 'Service', 'Réanimation'),
-      _item(Icons.badge_outlined, 'Fonction', 'Médecin réanimateur'),
+      _item(Icons.badge_outlined, 'Identifiant', _identifiant?.isNotEmpty == true ? _identifiant! : '—'),
       _item(Icons.wc_rounded, 'Sexe', _sexe == 'F' ? 'Femme' : _sexe == 'M' ? 'Homme' : '—'),
       _item(Icons.info_outline_rounded, 'À propos de SepsisCare', appSlogan),
       const SizedBox(height: 18),
@@ -70,7 +85,8 @@ class _DoctorProfilePageState extends State<DoctorProfilePage> {
   );
 
   Widget _item(IconData icon, String title, String value) => Container(
-    margin: const EdgeInsets.only(bottom: 9), padding: const EdgeInsets.all(14),
+    margin: const EdgeInsets.only(bottom: 9),
+    padding: const EdgeInsets.all(14),
     decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(14),
       border: Border.all(color: SepsisColors.border)),
     child: Row(children: [

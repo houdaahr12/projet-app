@@ -6,7 +6,7 @@ class SepsisCareBottomNav extends StatelessWidget {
   final int currentIndex;
 
   void _go(BuildContext context, int index) {
-    const routes = ['/', '/alerts', '/patients', '/profile'];
+    const routes = ['/home', '/alerts', '/patients', '/profile'];
     if (index == currentIndex) return;
     Navigator.pushNamedAndRemoveUntil(context, routes[index], (route) => false);
   }
