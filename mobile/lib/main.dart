@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 
-import 'home_page.dart';
-import 'pages/gestion_medecins.dart';
-import 'pages/login_admin.dart';
-import 'screens/alert_details_page.dart';
-import 'screens/alerts_page.dart';
-import 'screens/doctor_profile_page.dart';
-import 'screens/patient_details_page.dart';
-import 'screens/patients_page.dart';
-import 'splash_page.dart';
-import 'theme/colors.dart';
-import 'services/auth_service.dart';
+import 'package:mobile/core/theme/app_theme.dart';
+
+import 'package:mobile/medecin/pages/home_page.dart';
+import 'package:mobile/admin/pages/gestion_medecins.dart';
+import 'package:mobile/auth/login_admin.dart';
+import 'package:mobile/medecin/pages/alert_details_page.dart';
+import 'package:mobile/medecin/pages/alerts_page.dart';
+import 'package:mobile/medecin/pages/doctor_profile_page.dart';
+import 'package:mobile/medecin/pages/patient_details_page.dart';
+import 'package:mobile/medecin/pages/patients_page.dart';
+import 'package:mobile/core/splash_page.dart';
+import 'package:mobile/core/theme/colors.dart';
+import 'package:mobile/core/services/auth_service.dart';
 import 'models/patient.dart';
 import 'models/patient_alert.dart';
 
@@ -41,23 +43,7 @@ class SepsisCareApp extends StatelessWidget {
     return MaterialApp(
       title: 'SepsisCare',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        useMaterial3: true,
-        scaffoldBackgroundColor: SepsisColors.canvas,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: AppColors.blue,
-          primary: AppColors.blue,
-          secondary: AppColors.skyBlue,
-          surface: AppColors.white,
-        ),
-        fontFamily: 'Arial',
-        appBarTheme: const AppBarTheme(
-          backgroundColor: AppColors.backgroundColor,
-          foregroundColor: AppColors.navy,
-          elevation: 0,
-          centerTitle: false,
-        ),
-      ),
+      theme: AppTheme.light,
       home: const StartupGate(),
       routes: {
         '/splash': (_) => const SplashPage(),

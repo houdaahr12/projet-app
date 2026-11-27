@@ -142,7 +142,7 @@ def _available_beds(conn):
     """Beds currently occupied by active simulation patients are never reassigned."""
     occupied = {
         str(row[0]) for row in conn.execute(text(
-            "SELECT lit FROM patients WHERE source='simulation' AND statut='actif'"
+        "SELECT lit FROM patients WHERE statut='actif'"
         )).all() if row[0] is not None
     }
     return [str(bed) for bed in range(1, BED_COUNT + 1) if str(bed) not in occupied]

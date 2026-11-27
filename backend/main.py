@@ -3,7 +3,7 @@ from pathlib import Path
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from routers import auth, doctors, stats, simulation, patients
+from routers import auth, doctors, stats, simulation, patients, profile, patient_create
 from database import engine, Base
 import models
 from ml import features, model_service, simulator
@@ -31,6 +31,8 @@ app.include_router(doctors.router)
 app.include_router(stats.router)
 app.include_router(simulation.router)
 app.include_router(patients.router)
+app.include_router(profile.router)
+app.include_router(patient_create.router)
 
 
 @app.on_event("startup")
